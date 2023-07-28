@@ -1,0 +1,15 @@
+FROM node:20
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm install -g pnpm@5.15.2
+
+RUN pnpm install -g prisma
+
+RUN pnpm install
+
+COPY . .
+
+CMD ["prisma", "migrate", "dev", "&&", "npm", "run", "dev"]

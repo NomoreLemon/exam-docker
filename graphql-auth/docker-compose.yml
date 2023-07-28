@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - '3306:3306'
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+      dockerfile: DockerfileDev
+    environment:
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - '3000:${PORT}'
+    depends_on:
+      - mariadb
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'curl -f http://localhost:${PORT}/healthcheck || exit 1']
+
+volumes:
+  mariadb_data:
